@@ -1,0 +1,14 @@
+﻿@model BeYourMarket.Web.Models.SearchListingModel
+
+@{
+    Layout = null;
+}
+
+<div class="row-eq-height">
+    @foreach (var item in Model.ListingsPageList)
+    {
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+            @Html.Partial("~/Views/Listing/_ListingCard.cshtml", item)
+        </div>
+    }
+</div>

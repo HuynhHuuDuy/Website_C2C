@@ -1,0 +1,20 @@
+﻿@model RouteValueDictionary
+
+@section Styles {
+    
+}
+
+@{
+    ViewBag.Title = "[[[Configure Hook]]]";
+}
+
+<div class="wraper container-fluid">
+    @Html.Partial("_UserMessage")
+
+    @Html.Action(Model["action"].ToString(), Model["controller"].ToString(), Model)    
+</div>
+
+@section Scripts {
+
+}
+

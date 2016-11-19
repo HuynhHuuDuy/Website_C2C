@@ -1,0 +1,194 @@
+﻿@using GridMvc.Html
+@using Microsoft.AspNet.Identity
+
+@model BeYourMarket.Web.Models.OrderModel
+
+@{
+    ViewBag.Title = "[[[Orders]]]";
+    var currentUserId = User.Identity.GetUserId();    
+}
+
+@section Styles {
+    <link href="~/Content/Gridmvc.css" rel="stylesheet" />
+    <link href="~/Content/gridmvc.datepicker.min.css" rel="stylesheet" />
+}
+
+@helper DisplayUpdateLink(int id, string userProvider, int status, IEnumerable<BeYourMarket.Model.Models.ListingReview> reviews)
+{
+    var userId = User.Identity.GetUserId();
+        
+    // Show link only in pending state
+    if (status == (int)Enum_OrderStatus.Pending)
+    {        
+        if (userId == userProvider)
+        {
+            <a class="btn btn-success btn-sm m-b-5" href="javascript:void(0);" onclick="confirmOrderAction(@id, 2);"><i class="fa fa-thumbs-up"></i> [[[Accept]]]</a>
+            <a class="btn btn-danger btn-sm m-b-5" href="javascript:void(0);" onclick="confirmOrderAction(@id, 3);"><i class="fa fa-remove"></i> [[[Cancel]]]</a>
+        }
+        else
+        {
+            <a class="btn btn-danger btn-sm m-b-5" href="javascript:void(0);" onclick="confirmOrderAction(@id, 3);"><i class="fa fa-remove"></i> [[[Cancel]]]</a>
+        }
+    }// Show link for review
+    else if (status == (int)Enum_OrderStatus.Confirmed && !reviews.Any(x => x.UserFrom == userId))
+    {        
+        <a class="btn btn-info btn-sm" href="@Url.Action("Review", "Listing", new { id = id })"><i class="fa fa-comment"></i> [[[Review]]]</a>
+    }
+}
+
+@helper DisplayStatus(int status)
+{
+    switch (status)
+    {
+        case 0:
+        case 1:
+            <span class="label label-info">[[[Pending]]]</span>
+            break;
+        case 2:
+        <span class="label label-success">[[[Success]]]</span>
+            break;
+        case 3:
+        <span class="label label-danger">[[[Cancelled]]]</span>
+            break;
+
+        default:
+        @status
+            break;
+    }
+}
+
+@helper DisplayListing(string title, int ListingID)
+{
+    <a href="@Url.Action("Listing", "Listing", new { id = ListingID })">@title <i class="fa fa-external-link"></i></a>
+}
+
+@helper DisplayUser(BeYourMarket.Model.Models.Order order, string userId)
+{
+    var user = userId == order.AspNetUserProvider.Id ? order.AspNetUserReceiver : order.AspNetUserProvider;
+
+    <a href="@Url.Action("Profile", "Listing", new { id = user.Id})">
+        <img src="@BeYourMarket.Web.Utilities.ImageHelper.GetUserProfileImagePath(user.Id)" class="img-circle thumb-sm" alt="img">
+        <span class="text-xs">@user.FullName</span>
+    </a>
+}
+
+<div class="body-content container-fluid">
+    <div class="main-section row">
+        <div class="container-fluid mrg-tb">
+
+            @Html.Partial("_DashBoardSide", "orders")
+
+            <div class=" col-md-9">
+                <div id="myTabContent" class="tab-content ">
+                    <div role="tabpanel" class="tab-pane card-content fade active in" id="listings" aria-labelledby="listings-tab">
+                        <div class="panel panel-default">
+                            <!-- Default panel contents -->
+                            <div class="panel-heading">
+                                [[[Orders]]]
+                            </div>
+                            <div class="panel-body">
+                                @Html.Partial("_UserMessage")
+
+                                @using (Html.BeginForm("ProfileUpdate", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <h4><i class="fa fa-shopping-cart"></i> [[[Orders]]]</h4>
+                                    <hr />
+
+                                }
+
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        @Html.Grid(Model.Grid).SetLanguage(Context.GetPrincipalAppLanguageForRequest().ToString()).EmptyText("[[[There are no items to display.]]]").Columns(columns =>
+                                       {
+                                           columns.Add()
+                                             .Encoded(false)
+                                             .Sanitized(false)
+                                             .RenderValueAs(x => DisplayUpdateLink(x.ID, x.UserProvider, x.Status, x.ListingReviews));
+
+                                           columns.Add(x => x.Status)
+                                               .Encoded(false)
+                                               .Sanitized(false)
+                                               .Titled("[[[Status]]]").RenderValueAs(x => DisplayStatus(x.Status));
+
+                                           columns.Add()
+                                               .Encoded(false)
+                                               .Sanitized(false)
+                                               .Titled("[[[User]]]")
+                                               .RenderValueAs(x => DisplayUser(x, currentUserId));
+
+                                           columns.Add(x => x.Listing.Title)
+                                               .Encoded(false)
+                                               .Sanitized(false)
+                                               .Titled("[[[Title]]]").RenderValueAs(x => DisplayListing(x.Listing.Title, x.ListingID));
+
+                                           columns.Add(x => x.PriceFormatted).Titled("[[[Price]]]");
+
+                                           columns.Add(x => x.Quantity).Titled("[[[Quantity]]]");
+                                           columns.Add(x => x.Description).Titled("[[[Description]]]");
+
+                                           columns.Add(x => x.ID).Titled("[[[Order ID]]]");
+
+                                           columns.Add(x => x.Created).Titled("[[[Created]]]").RenderValueAs(x => x.Created.ToShortDateString());
+
+
+                                       }).WithPaging(10).Selectable(false)
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/Scripts/gridmvc.min.js"></script>
+    @Html.Partial("_LocalizationGridMvc")
+
+    <script type="text/javascript">
+        function confirmOrderAction(id, status) {
+            var message;
+            if (status == 2) {
+                message = "[[[Confirm to accept the order]]]"
+            } else if (status == 3) {
+                message = "[[[Confirm to cancel the order]]]"
+            } else {
+                return;
+            }
+            swal({
+                title: "[[[Are you sure?]]]",
+                text: message,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "[[[Yes!]]]",
+                cancelButtonText: "[[[No!]]]",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    $.post('@Url.Action("OrderAction", "Payment")', { id: id, status: status })
+                    .done(function (data) {
+                        if (data.Success) {
+                            location.reload();
+                        } else {
+                            swal("[[[Failed!]]]", data.Message, "error");
+                        }
+                    })
+                    .fail(function (xhr, textStatus, errorThrown) {
+                        swal("[[[Failed!]]]", xhr.responseText, "error");
+                    })
+                } else {
+                    swal("[[[Cancelled!]]]", "", "error");
+                }
+            });
+        }
+    </script>
+}

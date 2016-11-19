@@ -1,0 +1,85 @@
+﻿@model BeYourMarket.Web.Models.CategoryModel
+
+@{
+    ViewBag.Title = "[[[Category]]]";
+}
+
+<div class="wraper container-fluid">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="panel-title">[[[Category]]]</h3></div>
+                <div class="panel-body">
+
+                    <form action="@Url.Action("CategoryUpdate", "Listing")" id="settingsForm" method="post" class="form-horizontal" role="form">
+                        @Html.HiddenFor(x => x.Category.ID)
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">[[[Name]]]</label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" id="Category_Name" name="Category.Name" value="@Model.Category.Name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">[[[Description]]]</label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" id="Category_Description" name="Category.Description" value="@Model.Category.Description" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <label class="cr-styled">
+                                    <input checked="@Model.Category.Enabled" id="Category_Enabled" name="Category.Enabled" type="checkbox" value="true" />
+                                    <i class="fa"></i>
+                                    [[[Enabled]]]
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr />
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">[[[Listing Type]]]</label>
+                            <div class="col-md-10">
+                                <fieldset>
+                                    @foreach (var option in Model.ListingTypes)
+                                    {
+                                        <input type="checkbox" id="CategoryListingTypeID" name="CategoryListingTypeID" value="@option.ID" checked="@Model.CategoryListingTypeID.Contains(option.ID)" required />
+                                            <label for="CategoryListingTypeID">@option.Name</label>
+                                    }
+                                </fieldset>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-offset-2 col-lg-10">
+                                <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> [[[Save]]]</button>
+                                <a href="@Url.Action("Categories", "Listing")" class="btn btn-default"><i class="fa fa-remove"></i> [[[Cancel]]]</a>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function () {
+            $.validator.addMethod('require-one', function (value) {
+                if ($('#CategoryListingTypeID').is(':checked')) {
+                    return $('.require-one:checked').size() > 0;
+                } else {
+                    return true;
+                }
+            }, 'Selecione pelo menos uma das opções.');
+        });
+    </script>
+}

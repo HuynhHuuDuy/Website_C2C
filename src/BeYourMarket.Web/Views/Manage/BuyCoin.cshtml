@@ -1,0 +1,89 @@
+﻿@using BeYourMarket.Web.Models;
+@{
+    ViewBag.Title = "BuyCoin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //var list_orderbuycoin = ViewData["OrderBuyCoin"] as List<OrderBuyCoinViewModel>;
+}
+
+<script>
+    $(document).ready(function () {
+
+        var usercoins = $("#txt_usercoins").val();
+        $("#span_usercoins").text(usercoins);
+
+        var s = "SDXFQTHHSLS98";
+        $("#btn_submit_1000").click(function () {
+            $("#business").val(s);
+            $("#item_number_1").val("1000");
+            $("#amount_1").val("10");
+            $("form").submit();
+        });
+        $("#btn_submit_1500").click(function () {
+            $("#business").val(s);
+            $("#item_number_1").val("1500");
+            $("#amount_1").val("13");
+            $("form").submit();
+        });
+        $("#btn_submit_2000").click(function () {
+            $("#business").val(s);
+            $("#item_number_1").val("2000");
+            $("#amount_1").val("16");
+            $("form").submit();
+        });
+    });
+</script>
+
+<section class="content">
+    <div class="row col-sm-12">
+        <div class="col-sm-12">
+            <h2>Buy Package Coins to Sell Your Product</h2>
+            <br />
+            <h3 style="text-align:center">Your coins: <span id="span_usercoins"></span></h3>
+            <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+
+                <input type="hidden" name="cmd" value="_cart" />
+                <input type="hidden" name="upload" value="1" />
+
+                <input type="hidden" name="business" value="" id="business" />
+                <input type="hidden" name="return" value="http://localhost:7076/manage/buycoin" />
+
+                <input type="hidden" name="item_name_1" value="Coins" />
+                <input type="hidden" name="item_number_1" value="" id="item_number_1" />
+                <input type="hidden" name="amount_1" value="" id="amount_1" />
+                <input type="hidden" name="quantity_1" value="1" />
+
+
+                <div class="row col-sm-12" style="margin-top:50px">
+                    <div class="col-sm-4">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">1000 Coins / 200.000 VND</div>
+                            <div class="panel-body">
+                                <img src="~/Images/Community/1.jpg" />
+                                <span class="btn btn-primary" id="btn_submit_1000">Buy</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">1500 Coins / 300.000 VND</div>
+                            <div class="panel-body">
+                                <img src="~/Images/Community/1.jpg" />
+                                <span class="btn btn-primary" id="btn_submit_1500">Buy</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">2000 Coins / 400.000 VND</div>
+                            <div class="panel-body">
+                                <img src="~/Images/Community/1.jpg" />
+                                <span class="btn btn-primary" id="btn_submit_2000">Buy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+

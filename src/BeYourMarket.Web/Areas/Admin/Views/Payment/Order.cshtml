@@ -1,0 +1,170 @@
+﻿@using GridMvc.Html
+@using Microsoft.AspNet.Identity
+
+@model BeYourMarket.Web.Models.OrderModel
+
+@{
+    ViewBag.Title = "[[[Orders]]]";
+}
+
+@section Styles {
+    <link href="~/Content/Gridmvc.css" rel="stylesheet" />
+    <link href="~/Content/gridmvc.datepicker.min.css" rel="stylesheet" />
+}
+
+@helper DisplayUpdateLink(int id, string userProvider, int status)
+{
+    // Show link only in pending state
+    if (status == 1)
+    {
+        var user = User.Identity.GetUserId();
+
+        if (user == userProvider)
+        {
+            <a class="btn btn-success btn-sm m-b-5" href="javascript:void(0);" onclick="confirmOrderAction(@id, 2);"><i class="fa fa-thumbs-up"></i> [[[Accept]]]</a>
+            <a class="btn btn-danger btn-sm m-b-5" href="javascript:void(0);" onclick="confirmOrderAction(@id, 3);"><i class="fa fa-remove"></i> [[[Cancel]]]</a>
+        }
+        else
+        {
+            <a class="btn btn-danger btn-sm m-b-5" href="javascript:void(0);" onclick="confirmOrderAction(@id, 3);"><i class="fa fa-remove"></i> [[[Cancel]]]</a>
+        }
+    }
+}
+
+@helper DisplayStatus(int status)
+{
+    switch (status)
+    {
+        case 0:
+        case 1:
+            <span class="label label-info">[[[Pending]]]</span>
+            break;
+        case 2:
+        <span class="label label-success">[[[Success]]]</span>
+            break;
+        case 3:
+        <span class="label label-danger">[[[Cancelled]]]</span>
+            break;
+
+        default:
+        @status
+            break;
+    }
+}
+
+@helper DisplayListing(string title, int ListingID)
+{
+    <a href="@Url.Action("Listing", "Listing", new { id = ListingID })">@title <i class="fa fa-external-link"></i></a>
+}
+
+<div class="wraper container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">[[[Orders]]]</h3>                    
+                </div>
+                <div class="panel-body">
+                    @Html.Partial("_UserMessage")
+
+                    <div class="alert alert-info">
+                        <p>[[[Here you can manage all the orders, you can cancel or accept orders on behalf of the users.]]]</p>
+                    </div>
+
+                    @using (Html.BeginForm("ProfileUpdate", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <h4><i class="fa fa-shopping-cart"></i> [[[Orders]]]</h4>
+                        <hr />
+
+                    }
+
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            @Html.Grid(Model.Grid).SetLanguage(Context.GetPrincipalAppLanguageForRequest().ToString()).EmptyText("[[[There are no items to display.]]]").Columns(columns =>
+                                       {
+                                           columns.Add()
+                                             .Encoded(false)
+                                             .Sanitized(false)
+                                             .RenderValueAs(x => DisplayUpdateLink(x.ID, x.UserProvider, x.Status));
+
+                                           columns.Add(x => x.Status)
+                                               .Encoded(false)
+                                               .Sanitized(false)
+                                               .Titled("[[[Status]]]").RenderValueAs(x => DisplayStatus(x.Status));
+
+                                           columns.Add(x => x.Listing.Title)
+                                               .Encoded(false)
+                                               .Sanitized(false)
+                                               .Titled("[[[Title]]]").RenderValueAs(x => DisplayListing(x.Listing.Title, x.ListingID));
+
+                                           columns.Add(x => x.AspNetUserProvider.Email).Titled("[[[Provider]]]");
+                                           columns.Add(x => x.AspNetUserReceiver.Email).Titled("[[[Receiver]]]");
+
+                                           columns.Add(x => x.PriceFormatted).Titled("[[[Price]]]");
+
+                                           columns.Add(x => x.Description).Titled("[[[Description]]]");
+
+                                           columns.Add(x => x.Quantity).Titled("[[[Quantity]]]");
+                                                                                      
+                                           columns.Add(x => x.ID).Titled("[[[Order ID]]]");
+                                           
+                                           columns.Add(x => x.Created).Titled("[[[Created]]]").RenderValueAs(x => x.Created.ToShortDateString());
+
+
+                                       }).WithPaging(10).Sortable().Filterable().Selectable(false)
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/gridmvc.min.js"></script>
+    @Html.Partial("_LocalizationGridMvc")
+
+    <script type="text/javascript">
+        function confirmOrderAction(id, status) {
+            var message;
+            if (status == 2) {
+                message = "@Html.Raw(HttpUtility.HtmlDecode("[[[Confirm to accept the order]]]"))"
+            } else if (status == 3) {
+                message = "@Html.Raw(HttpUtility.HtmlDecode("[[[Confirm to cancel the order]]]"))"
+            } else {
+                return;
+            }
+        swal({
+            title: "[[[Are you sure?]]]",
+            text: message,
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "[[[Yes!]]]",
+            cancelButtonText: "[[[No!]]]",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        }, function (isConfirm) {
+            if (isConfirm) {
+                $.post('@Url.Action("OrderAction", "Payment")', { id: id, status: status })
+                .done(function (data) {
+                    if (data.Success) {
+                        location.reload();
+                    } else {
+                        swal("[[[Failed]]]", data.Message, "error");
+                    }
+                })
+                .fail(function (xhr, textStatus, errorThrown) {
+                    swal("[[[Failed]]]", xhr.responseText, "error");
+                })
+            } else {
+                swal("[[[Cancelled]]]", "", "error");
+            }
+        });
+    }
+</script>
+}

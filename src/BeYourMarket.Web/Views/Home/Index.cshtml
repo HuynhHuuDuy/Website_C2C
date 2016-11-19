@@ -1,0 +1,49 @@
+﻿@using MoreLinq;
+@model BeYourMarket.Web.Models.SearchListingModel
+
+@{
+    ViewBag.Title = CacheHelper.Settings.Name;
+    var imagePath = ImageHelper.GetCommunityImagePath("cover");
+    var bgCss = string.Empty;
+
+    if (!string.IsNullOrEmpty(imagePath))
+    {
+        bgCss = string.Format(@"background: linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,.15)),url(""{0}""); background-size: cover;", imagePath);
+    }
+}
+
+@section Styles {
+
+}
+
+<div class="landing-bg jumbotron text-center" style="@bgCss">
+    <div class=" container" style="margin: 0 auto; max-width: 60em;">
+        <h1>@CacheHelper.Settings.Slogan</h1>
+        <p class="lead">@CacheHelper.Settings.Description</p>
+        <form method="get" action="@Url.Action("Search", "Home")">
+            <p><input type="text" class="form-control input-lg" placeholder="@CacheHelper.Settings.SearchPlaceHolder" id="SearchText" name="SearchText"></p>
+            <p><button type="submit" class="btn btn-primary btn-lg"><i class="mdi-action-search"></i> [[[Search]]]</button></p>
+        </form>
+    </div>
+</div>
+
+<div class="container-fluid body-content">
+    <div class="row">
+        <div class="col-md-12 section-title">
+            <h4>[[[Latest Listings]]] <a class="btn btn-default btn-sm pull-right" href="@Url.Action("Search","Home")">[[[See All Listings]]] &raquo;</a></h4>
+        </div>
+    </div>
+
+    <div class="row row-eq-height m-b-10">
+        @foreach (var item in Model.ListingsPageList.Take(8))
+        {
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                @Html.Partial("~/Views/Listing/_ListingCard.cshtml", item)
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+
+}

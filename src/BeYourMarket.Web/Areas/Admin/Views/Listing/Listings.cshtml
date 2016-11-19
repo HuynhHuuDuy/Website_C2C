@@ -1,0 +1,110 @@
+﻿@using GridMvc.Html
+@model BeYourMarket.Web.Models.ListingModel
+
+@section Styles {
+    <link href="~/Content/Gridmvc.css" rel="stylesheet" />
+    <link href="~/Content/gridmvc.datepicker.min.css" rel="stylesheet" />
+}
+
+@{
+    ViewBag.Title = "[[[Listings]]]";
+}
+
+@helper DisplayUpdateLink(int id)
+{
+    <a class="btn btn-primary btn-sm" href="@Url.Action("ListingUpdate", "Listing", new { id = id })"><i class="fa fa-edit"></i> [[[Edit]]]</a>
+}
+
+@helper DisplayDeleteLink(int id, string title) {
+    <a class="btn btn-danger btn-sm" href="javascript:void(0);" onclick="confirmDelete(@id, '@title');"><i class="fa fa-remove"></i> [[[Delete]]]</a>
+}
+
+@helper GetCategoryName(int id)
+{
+    @Model.Categories.Single(x => x.ID == id).Name
+}
+
+
+<div class="wraper container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">[[[Listings]]]</h3>
+                </div>
+                <div class="panel-body">
+                    @Html.Partial("_UserMessage")
+
+                    <div class="alert alert-info">
+                        <p>[[[Here you can manage all the listings in the marketplace.]]]</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-10">
+                            <a class="btn btn-primary" href="@Url.Action("ListingUpdate", "Listing")"><i class="fa fa-plus"></i> [[[Add New]]]</a>
+                        </div>
+                    </div>
+
+                    <hr />
+                    
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            @Html.Grid(Model.Grid).SetLanguage(Context.GetPrincipalAppLanguageForRequest().ToString()).EmptyText("[[[There are no items to display.]]]").Columns(columns =>
+                       {
+                           columns.Add()
+                             .Encoded(false)
+                             .Sanitized(false)
+                             .RenderValueAs(x => DisplayUpdateLink(x.ID));
+                           
+                            columns.Add()
+                             .Encoded(false)
+                             .Sanitized(false)
+                             .RenderValueAs(x => DisplayDeleteLink(x.ID, x.Title));
+
+                           columns.Add(x => x.ID);
+                           columns.Add(x => x.CategoryID).RenderValueAs(x => GetCategoryName(x.CategoryID)).Titled("[[[Category]]]");
+                           columns.Add(x => x.ListingType.Name).Titled("[[[Listing Type]]]");
+                           columns.Add(x => x.Active).Titled("[[[Active]]]");
+                           columns.Add(x => x.Title).Titled("[[[Title]]]");
+                           columns.Add(x => x.Description).Titled("[[[Description]]]");
+                           columns.Add(x => x.ShowEmail).Titled("[[[Show Email]]]");
+                           columns.Add(x => x.Created).RenderValueAs(x => x.Created.ToShortDateString()).Titled("[[[Created]]]");
+
+
+                       }).Sortable().Filterable().WithPaging(10).Selectable(false)
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/gridmvc.min.js"></script>
+    @Html.Partial("_LocalizationGridMvc")
+
+    <script type="text/javascript">
+        function confirmDelete(id, title) {
+            swal({
+                title: "[[[Are you sure?]]]",
+                text: "[[[You will delete]]] " + title,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "[[[Yes, delete it!]]]",
+                cancelButtonText: "[[[No, cancel please!]]]",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    post('@Url.Action("ListingDelete","Listing")', { id: id });
+                } else {
+                    swal("[[[Cancelled!]]]", "", "error");
+                }
+            });
+        }
+    </script>
+}

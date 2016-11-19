@@ -1,0 +1,13 @@
+﻿@*You can customize your own email template layout here*@
+@{
+    Layout = "~/Views/Emails/_Layout.cshtml";
+}
+
+@{
+    var body = (string)ViewBag.Body;
+    var baseUrl = Request.Url.GetLeftPart(UriPartial.Authority);
+    var siteName = CacheHelper.Settings.Name;
+    body = TokenStringFormat.Format(body, new { CallbackUrl = ViewBag.CallbackUrl, Message = ViewBag.Message, SiteUrl = baseUrl, SiteName = siteName });
+}
+
+@Html.Raw(body)

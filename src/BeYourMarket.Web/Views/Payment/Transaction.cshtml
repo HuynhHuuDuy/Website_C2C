@@ -1,0 +1,35 @@
+﻿@using GridMvc.Html
+@using Microsoft.AspNet.Identity
+
+@{
+    ViewBag.Title = "[[[Transactions]]]";
+}
+
+<div class="body-content container-fluid">
+    <div class="main-section row">
+        <div class="container-fluid mrg-tb">
+
+            @Html.Partial("_DashBoardSide", "transaction")
+
+            <div class=" col-md-9">
+                <div id="myTabContent" class="tab-content ">
+                    <div role="tabpanel" class="tab-pane card-content fade active in" id="listings" aria-labelledby="listings-tab">
+                        <div class="panel panel-default">
+                            <!-- Default panel contents -->
+                            <div class="panel-heading">
+                                [[[Transactions]]]
+                            </div>
+
+                            @Html.DoAction(HookName.Transaction)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+}

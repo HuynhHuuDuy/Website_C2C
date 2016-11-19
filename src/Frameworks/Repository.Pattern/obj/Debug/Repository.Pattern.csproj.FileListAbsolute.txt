@@ -1,0 +1,11 @@
+E:\web_example\beyourmarket-master\src\Frameworks\Repository.Pattern\bin\Debug\Repository.Pattern.dll.config
+E:\web_example\beyourmarket-master\src\Frameworks\Repository.Pattern\bin\Debug\Repository.Pattern.dll
+E:\web_example\beyourmarket-master\src\Frameworks\Repository.Pattern\bin\Debug\Repository.Pattern.pdb
+E:\web_example\beyourmarket-master\src\Frameworks\Repository.Pattern\obj\Debug\Repository.Pattern.dll
+E:\web_example\beyourmarket-master\src\Frameworks\Repository.Pattern\obj\Debug\Repository.Pattern.pdb
+C:\Users\HHD\Documents\GitHub\Website_C2C\src\Frameworks\Repository.Pattern\bin\Debug\Repository.Pattern.dll.config
+C:\Users\HHD\Documents\GitHub\Website_C2C\src\Frameworks\Repository.Pattern\bin\Debug\Repository.Pattern.dll
+C:\Users\HHD\Documents\GitHub\Website_C2C\src\Frameworks\Repository.Pattern\bin\Debug\Repository.Pattern.pdb
+C:\Users\HHD\Documents\GitHub\Website_C2C\src\Frameworks\Repository.Pattern\obj\Debug\Repository.Pattern.dll
+C:\Users\HHD\Documents\GitHub\Website_C2C\src\Frameworks\Repository.Pattern\obj\Debug\Repository.Pattern.pdb
+C:\Users\HHD\Documents\GitHub\Website_C2C\src\Frameworks\Repository.Pattern\obj\Debug\Repository.Pattern.csprojResolveAssemblyReference.cache
